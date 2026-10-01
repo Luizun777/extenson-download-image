@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<!-- El servidor manda la misma política en cabecera; la repetimos en <meta> para que la página sea estricta la sirva quien la sirva -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; img-src * data: blob:; script-src 'self'">
+<title>Fixture: CSP estricta</title>
+<!--
+  Página bajo CSP estricta: nada en línea (ni <script> ni <style> ni on*=). Script en csp.js, CSS en csp.css.
+  El overlay de la extensión vive en el mundo aislado y debe seguir estilándose sin violaciones en consola.
+  Convención: data-expect = ruta resuelta esperada (relativa al origen de la página); data-expect-kind = kind del ImageRef.
+  expect: #c1 → /img/c1.png?w=300&h=300 (http|chip estilado bajo CSP; descarga directa)
+  expect: #c2 → /img/c2.png?w=320&h=240 (http|chip estilado bajo CSP; descarga directa)
+-->
+<link rel="stylesheet" href="/pages/csp.css">
+</head>
+<body>
+<h1>CSP estricta</h1>
+<p>Esta página prohíbe scripts y estilos en línea. Cualquier violación se escribe en consola como error.</p>
+<img id="c1" src="/img/c1.png?w=300&h=300" width="300" height="300" alt="c1" data-expect="/img/c1.png?w=300&h=300" data-expect-kind="http">
+<img id="c2" src="/img/c2.png?w=320&h=240" width="320" height="240" alt="c2" data-expect="/img/c2.png?w=320&h=240" data-expect-kind="http">
+<p id="js-status">csp.js no se ha ejecutado</p>
+<script src="/pages/csp.js"></script>
+</body>
+</html>

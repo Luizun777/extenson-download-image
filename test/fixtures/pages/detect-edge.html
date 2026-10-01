@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: casos límite de detección</title>
+<!-- expect: #svg-img → /img/svgimg.png?w=120&h=120 (http) ; <image href> dentro de <svg> inline: el raster bajo el puntero (el elemento devuelto es el <image>, no el <svg>) -->
+<!-- expect: #svg-xlink → /img/svgx.png?w=160&h=160 (http) ; <image xlink:href> -->
+<!-- expect: #svg-plain → svg (svg) ; <svg> con un <image> en la esquina: el centro cae en el <rect> → svg raíz -->
+<!-- expect: #pen2 → /img/pen2.png?w=400&h=300 (http) ; img pointer-events:none tras 60 miniaturas en el mismo contenedor: fallback geométrico -->
+<!-- expect: #data-url → /img/real.png?w=300&h=300 (http) ; data-url a una ficha HTML (sin extensión de imagen) se ignora: gana el src real -->
+<!-- expect: #data-url-ph → /img/du.png?w=300&h=300 (http) ; src GIF 1x1 placeholder + data-url con extensión de imagen -->
+<!-- expect: #pseudo-abs → /img/pabs.png?w=100&h=100 (http) ; ::before absoluto 100x100 (left/top 150) en una tarjeta 400x400 posicionada: el rect devuelto es el del pseudo -->
+<!-- expect: #pseudo-both → /img/pboth.png?w=300&h=300 (http) ; ::before con content:url(a) y background-image:url(b): gana a (misma regla que resolve) -->
+<!-- skip: #pseudo-none → ::before con content:none y background-image: no se genera, no se pinta, no se ofrece -->
+<!-- skip: #pseudo-icon → ::before de 16x16 (icono) en una tarjeta 400x400: demasiado pequeño y no está bajo el centro -->
+<style>
+  body { margin: 8px; font: 14px system-ui, sans-serif; }
+  h1 { margin: 0 0 8px; font-size: 18px; }
+  .row { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; margin-bottom: 24px; }
+  svg { display: block; background: #eee; }
+  #gal { width: 420px; }
+  #gal .thumb { width: 10px; height: 10px; display: inline-block; }
+  #pen2 { display: block; width: 400px; height: 300px; pointer-events: none; }
+  img.plain { display: block; }
+  .card { width: 400px; height: 400px; position: relative; background: #ddd; }
+  #pseudo-none::before { content: none; background-image: url(/img/ghost.png?w=50&h=50); }
+  #pseudo-icon::before { content: ""; position: absolute; left: 8px; top: 8px; width: 16px; height: 16px; background-image: url(/img/icon.png?w=16&h=16); }
+  #pseudo-abs::before { content: ""; position: absolute; left: 150px; top: 150px; width: 100px; height: 100px; background-image: url(/img/pabs.png?w=100&h=100); background-size: cover; }
+  #pseudo-both { width: 300px; height: 300px; }
+  #pseudo-both::before { content: url(/img/pboth.png?w=300&h=300); background-image: url(/img/pboth-bg.png?w=300&h=300); display: block; }
+</style>
+</head>
+<body>
+<h1>Casos límite de detección</h1>
+<div class="row">
+  <svg id="svg-a" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-label="escena a">
+    <rect width="200" height="200" fill="#ccc"/>
+    <image id="svg-img" href="/img/svgimg.png?w=120&h=120" x="40" y="40" width="120" height="120" data-expect="/img/svgimg.png?w=120&h=120" data-expect-kind="http"/>
+  </svg>
+  <svg id="svg-b" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-label="escena b">
+    <rect width="200" height="200" fill="#cfc"/>
+    <image id="svg-xlink" xlink:href="/img/svgx.png?w=160&h=160" x="20" y="20" width="160" height="160" data-expect="/img/svgx.png?w=160&h=160" data-expect-kind="http"/>
+  </svg>
+  <svg id="svg-plain" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-label="plain" data-expect="svg" data-expect-kind="svg">
+    <rect width="200" height="200" fill="#ccf"/>
+    <image id="svg-corner" href="/img/corner.png?w=40&h=40" x="0" y="0" width="40" height="40"/>
+  </svg>
+</div>
+<div class="row">
+  <div id="gal">
+    <!-- 60 miniaturas antes del objetivo: el fallback no debe agotar su cupo con ellas -->
+    <script>
+      'use strict';
+      for (let i = 0; i < 60; i++) document.write('<img class="thumb" src="/img/th.png?w=10&h=10" alt="">');
+    </script>
+    <img id="pen2" src="/img/pen2.png?w=400&h=300" width="400" height="300" alt="pen2" data-expect="/img/pen2.png?w=400&h=300" data-expect-kind="http">
+  </div>
+  <img id="data-url" class="plain" src="/img/real.png?w=300&h=300" data-url="/product/123" width="300" height="300" alt="data-url" data-expect="/img/real.png?w=300&h=300" data-expect-kind="http">
+  <img id="data-url-ph" class="plain" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-url="/img/du.png?w=300&h=300" width="300" height="300" alt="data-url-ph" data-expect="/img/du.png?w=300&h=300" data-expect-kind="http">
+</div>
+<div class="row">
+  <div id="pseudo-none" class="card" data-expect-skip="content:none"></div>
+  <div id="pseudo-icon" class="card" data-expect-skip="pseudo 16px"></div>
+  <div id="pseudo-abs" class="card" data-expect="/img/pabs.png?w=100&h=100" data-expect-kind="http"></div>
+  <div id="pseudo-both" data-expect="/img/pboth.png?w=300&h=300" data-expect-kind="http"></div>
+</div>
+</body>
+</html>

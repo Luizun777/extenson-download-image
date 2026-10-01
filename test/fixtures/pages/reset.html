@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: CSS hostil (reset global)</title>
+<!--
+  CSS hostil: un reset universal con !important, [popover] oculto e <imgdl-root> oculto.
+  El overlay (host con inline !important, shadow cerrado y popover dentro del shadow) debe seguir visible.
+  Convención: data-expect = ruta resuelta esperada; data-expect-kind = kind del ImageRef.
+  expect: #r1 → /img/r1.png?w=300&h=300 (http|chipRect correcto pese al reset)
+  expect: #r2 → /img/r2.png?w=300&h=300 (http|chipRect correcto pese al reset)
+-->
+<style>
+  * { all: unset !important }
+  [popover] { display: none !important }
+  imgdl-root { display: none !important }
+  /* Tras all:unset, head/style/script serían 'inline' y mostrarían su texto: los ocultamos para que los objetivos tengan una posición estable */
+  head, style, script, title { display: none !important }
+  img[data-expect] { display: block !important; margin: 24px !important }
+</style>
+</head>
+<body>
+<div>Reset global con !important: todo pierde sus estilos de agente de usuario.</div>
+<img id="r1" src="/img/r1.png?w=300&h=300" width="300" height="300" alt="r1" data-expect="/img/r1.png?w=300&h=300" data-expect-kind="http">
+<img id="r2" src="/img/r2.png?w=300&h=300" width="300" height="300" alt="r2" data-expect="/img/r2.png?w=300&h=300" data-expect-kind="http">
+</body>
+</html>

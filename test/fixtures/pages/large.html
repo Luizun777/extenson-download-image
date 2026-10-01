@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: ZIP grande</title>
+<!--
+  Lote grande (paso 10, opt-in con E2E_LARGE=1): 30 PNG de ruido incompresible de ~8 MB cada uno (/noise.png?mb=8&seed=1..30,
+  deterministas por semilla), renderizados a 300×200 con loading="eager". La página tarda en cargar (~250 MB): el test usa
+  waitUntil 'domcontentloaded' y no espera a 'load'. Convención: data-expect = ruta resuelta esperada; data-expect-kind = kind.
+  Esta página queda fuera de test/unit/fixtures-pages.test.js a propósito (30 × 8 MB no caben en la suite unitaria) y su
+  cabecera usa la forma colapsada, que expectedIds() no parsea; las convenciones las valida test/e2e/downloads-large.test.js.
+  expect (no parseado): #n1..#n30 → /noise.png?mb=8&seed=N (http|30 entradas noise.png, noise (2).png … noise (30).png en un ZIP STORE de ~240 MB por blob URL del offscreen)
+-->
+<style>
+  body { margin: 0; padding: 24px; font-family: system-ui, sans-serif; }
+  .row { display: flex; flex-wrap: wrap; gap: 16px; }
+  img { display: block; background: #eee; }
+</style>
+</head>
+<body>
+<h1>ZIP grande</h1>
+<div class="row">
+  <img id="n1" src="/noise.png?mb=8&seed=1" width="300" height="200" loading="eager" decoding="async" alt="ruido 1" data-expect="/noise.png?mb=8&seed=1" data-expect-kind="http">
+  <img id="n2" src="/noise.png?mb=8&seed=2" width="300" height="200" loading="eager" decoding="async" alt="ruido 2" data-expect="/noise.png?mb=8&seed=2" data-expect-kind="http">
+  <img id="n3" src="/noise.png?mb=8&seed=3" width="300" height="200" loading="eager" decoding="async" alt="ruido 3" data-expect="/noise.png?mb=8&seed=3" data-expect-kind="http">
+  <img id="n4" src="/noise.png?mb=8&seed=4" width="300" height="200" loading="eager" decoding="async" alt="ruido 4" data-expect="/noise.png?mb=8&seed=4" data-expect-kind="http">
+  <img id="n5" src="/noise.png?mb=8&seed=5" width="300" height="200" loading="eager" decoding="async" alt="ruido 5" data-expect="/noise.png?mb=8&seed=5" data-expect-kind="http">
+  <img id="n6" src="/noise.png?mb=8&seed=6" width="300" height="200" loading="eager" decoding="async" alt="ruido 6" data-expect="/noise.png?mb=8&seed=6" data-expect-kind="http">
+  <img id="n7" src="/noise.png?mb=8&seed=7" width="300" height="200" loading="eager" decoding="async" alt="ruido 7" data-expect="/noise.png?mb=8&seed=7" data-expect-kind="http">
+  <img id="n8" src="/noise.png?mb=8&seed=8" width="300" height="200" loading="eager" decoding="async" alt="ruido 8" data-expect="/noise.png?mb=8&seed=8" data-expect-kind="http">
+  <img id="n9" src="/noise.png?mb=8&seed=9" width="300" height="200" loading="eager" decoding="async" alt="ruido 9" data-expect="/noise.png?mb=8&seed=9" data-expect-kind="http">
+  <img id="n10" src="/noise.png?mb=8&seed=10" width="300" height="200" loading="eager" decoding="async" alt="ruido 10" data-expect="/noise.png?mb=8&seed=10" data-expect-kind="http">
+  <img id="n11" src="/noise.png?mb=8&seed=11" width="300" height="200" loading="eager" decoding="async" alt="ruido 11" data-expect="/noise.png?mb=8&seed=11" data-expect-kind="http">
+  <img id="n12" src="/noise.png?mb=8&seed=12" width="300" height="200" loading="eager" decoding="async" alt="ruido 12" data-expect="/noise.png?mb=8&seed=12" data-expect-kind="http">
+  <img id="n13" src="/noise.png?mb=8&seed=13" width="300" height="200" loading="eager" decoding="async" alt="ruido 13" data-expect="/noise.png?mb=8&seed=13" data-expect-kind="http">
+  <img id="n14" src="/noise.png?mb=8&seed=14" width="300" height="200" loading="eager" decoding="async" alt="ruido 14" data-expect="/noise.png?mb=8&seed=14" data-expect-kind="http">
+  <img id="n15" src="/noise.png?mb=8&seed=15" width="300" height="200" loading="eager" decoding="async" alt="ruido 15" data-expect="/noise.png?mb=8&seed=15" data-expect-kind="http">
+  <img id="n16" src="/noise.png?mb=8&seed=16" width="300" height="200" loading="eager" decoding="async" alt="ruido 16" data-expect="/noise.png?mb=8&seed=16" data-expect-kind="http">
+  <img id="n17" src="/noise.png?mb=8&seed=17" width="300" height="200" loading="eager" decoding="async" alt="ruido 17" data-expect="/noise.png?mb=8&seed=17" data-expect-kind="http">
+  <img id="n18" src="/noise.png?mb=8&seed=18" width="300" height="200" loading="eager" decoding="async" alt="ruido 18" data-expect="/noise.png?mb=8&seed=18" data-expect-kind="http">
+  <img id="n19" src="/noise.png?mb=8&seed=19" width="300" height="200" loading="eager" decoding="async" alt="ruido 19" data-expect="/noise.png?mb=8&seed=19" data-expect-kind="http">
+  <img id="n20" src="/noise.png?mb=8&seed=20" width="300" height="200" loading="eager" decoding="async" alt="ruido 20" data-expect="/noise.png?mb=8&seed=20" data-expect-kind="http">
+  <img id="n21" src="/noise.png?mb=8&seed=21" width="300" height="200" loading="eager" decoding="async" alt="ruido 21" data-expect="/noise.png?mb=8&seed=21" data-expect-kind="http">
+  <img id="n22" src="/noise.png?mb=8&seed=22" width="300" height="200" loading="eager" decoding="async" alt="ruido 22" data-expect="/noise.png?mb=8&seed=22" data-expect-kind="http">
+  <img id="n23" src="/noise.png?mb=8&seed=23" width="300" height="200" loading="eager" decoding="async" alt="ruido 23" data-expect="/noise.png?mb=8&seed=23" data-expect-kind="http">
+  <img id="n24" src="/noise.png?mb=8&seed=24" width="300" height="200" loading="eager" decoding="async" alt="ruido 24" data-expect="/noise.png?mb=8&seed=24" data-expect-kind="http">
+  <img id="n25" src="/noise.png?mb=8&seed=25" width="300" height="200" loading="eager" decoding="async" alt="ruido 25" data-expect="/noise.png?mb=8&seed=25" data-expect-kind="http">
+  <img id="n26" src="/noise.png?mb=8&seed=26" width="300" height="200" loading="eager" decoding="async" alt="ruido 26" data-expect="/noise.png?mb=8&seed=26" data-expect-kind="http">
+  <img id="n27" src="/noise.png?mb=8&seed=27" width="300" height="200" loading="eager" decoding="async" alt="ruido 27" data-expect="/noise.png?mb=8&seed=27" data-expect-kind="http">
+  <img id="n28" src="/noise.png?mb=8&seed=28" width="300" height="200" loading="eager" decoding="async" alt="ruido 28" data-expect="/noise.png?mb=8&seed=28" data-expect-kind="http">
+  <img id="n29" src="/noise.png?mb=8&seed=29" width="300" height="200" loading="eager" decoding="async" alt="ruido 29" data-expect="/noise.png?mb=8&seed=29" data-expect-kind="http">
+  <img id="n30" src="/noise.png?mb=8&seed=30" width="300" height="200" loading="eager" decoding="async" alt="ruido 30" data-expect="/noise.png?mb=8&seed=30" data-expect-kind="http">
+</div>
+</body>
+</html>

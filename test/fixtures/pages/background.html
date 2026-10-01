@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: fondos CSS</title>
+<!-- expect: #bg → /img/bg.png?w=600&h=400 (http) ; background-image: url() -->
+<!-- expect: #bg-set → /img/set.png?w=800&h=600 (http) ; image-set 1x/2x (caja 200x150): se espera el 2x -->
+<!-- expect: #before → /img/before.png?w=300&h=300 (http) ; ::before con content: url() -->
+<!-- expect: #after → /img/after.png?w=200&h=200 (http) ; ::after con background-image -->
+<style>
+  body { margin: 8px; font: 14px system-ui, sans-serif; }
+  h1 { margin: 0 0 8px; font-size: 18px; }
+  .row { display: flex; gap: 24px; align-items: flex-start; margin-bottom: 24px; }
+  #bg { width: 600px; height: 400px; background-image: url(/img/bg.png?w=600&h=400); background-size: cover; }
+  #bg-set {
+    width: 200px; height: 150px;
+    background-image: -webkit-image-set(url("/img/set.png?w=400&h=300") 1x, url("/img/set.png?w=800&h=600") 2x);
+    background-image: image-set(url("/img/set.png?w=400&h=300") 1x, url("/img/set.png?w=800&h=600") 2x);
+    background-size: cover;
+  }
+  #before { width: 300px; height: 300px; }
+  #before::before { content: url(/img/before.png?w=300&h=300); display: block; }
+  #after { width: 200px; height: 200px; }
+  #after::after { content: ""; display: block; width: 200px; height: 200px; background-image: url(/img/after.png?w=200&h=200); }
+</style>
+</head>
+<body>
+<h1>Fondos CSS</h1>
+<div class="row">
+  <div id="bg" data-expect="/img/bg.png?w=600&h=400" data-expect-kind="http"></div>
+  <div id="before" data-expect="/img/before.png?w=300&h=300" data-expect-kind="http"></div>
+  <div id="bg-set" data-expect="/img/set.png?w=800&h=600" data-expect-kind="http"></div>
+</div>
+<div class="row">
+  <div id="after" data-expect="/img/after.png?w=200&h=200" data-expect-kind="http"></div>
+</div>
+</body>
+</html>

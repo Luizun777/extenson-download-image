@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: carga perezosa y srcset</title>
+<!-- expect: #lazy-src → /img/lazy.png?w=800&h=600 (http) ; placeholder gif 1x1 en src, URL real en data-src -->
+<!-- expect: #lazy-srcset → /img/ls.png?w=800&h=600 (http) ; placeholder en src, candidatos en data-srcset (mayor w) -->
+<!-- expect: #pic-img → /img/pw.png?w=800&h=600 (http) ; <picture>: mayor candidato del <source type=image/webp> elegido -->
+<!-- expect: #cdn → /img/c.png?w=800&h=600&t=w_800,h_600 (http) ; srcset con comas dentro de la URL (CDN) -->
+<!--
+  Contrato con detect.js / thresholds.classifyFacts: #lazy-src y #lazy-srcset llevan un gif 1x1 en src (natural 1x1).
+  classifyFacts rechaza ese natural como 'pixel' ANTES de resolver la URL; cuando data-src / data-srcset / data-lazy-*
+  aporta el candidato, detect.js debe pasar natural:null (o un hecho hasLazyAttr que thresholds respete) para que no
+  disparen las reglas pixel/spacer y se juzgue por el rect (400x300). Sin eso, estas dos expectativas son inalcanzables.
+  Convención: data-expect = URL resuelta esperada; data-expect-kind = kind del ImageRef.
+-->
+<style>
+  body { margin: 8px; font: 14px system-ui, sans-serif; }
+  h1 { margin: 0 0 8px; font-size: 18px; }
+  .row { display: flex; gap: 24px; flex-wrap: wrap; }
+  .row img { display: block; width: 400px; height: 300px; }
+</style>
+</head>
+<body>
+<h1>Lazy / srcset</h1>
+<div class="row">
+  <img id="lazy-src"
+       src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+       data-src="/img/lazy.png?w=800&h=600"
+       width="400" height="300" alt="lazy"
+       data-expect="/img/lazy.png?w=800&h=600" data-expect-kind="http">
+
+  <img id="lazy-srcset"
+       src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+       data-srcset="/img/ls.png?w=400&h=300 400w, /img/ls.png?w=800&h=600 800w"
+       width="400" height="300" alt="lazy srcset"
+       data-expect="/img/ls.png?w=800&h=600" data-expect-kind="http">
+
+  <picture id="pic">
+    <source type="image/webp" srcset="/img/pw.png?w=400&h=300 400w, /img/pw.png?w=800&h=600 800w">
+    <img id="pic-img"
+         src="/img/pf.png?w=400&h=300"
+         srcset="/img/pf.png?w=400&h=300 400w, /img/pf.png?w=800&h=600 800w"
+         width="400" height="300" alt="picture"
+         data-expect="/img/pw.png?w=800&h=600" data-expect-kind="http">
+  </picture>
+
+  <img id="cdn"
+       src="/img/c.png?w=400&h=300&t=w_400,h_300"
+       srcset="/img/c.png?w=400&h=300&t=w_400,h_300 400w, /img/c.png?w=800&h=600&t=w_800,h_600 800w"
+       width="400" height="300" alt="cdn"
+       data-expect="/img/c.png?w=800&h=600&t=w_800,h_600" data-expect-kind="http">
+</div>
+</body>
+</html>

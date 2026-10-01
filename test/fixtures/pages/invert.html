@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: filter en html + transform en body</title>
+<!--
+  html{filter} y body{transform} convierten a ambos en bloque contenedor de position:fixed: un overlay fixed
+  normal se posicionaría respecto al documento (bug clásico) y, con la página desplazada 3000 px, quedaría fuera de vista.
+  El popover en top layer no se ve afectado. Las imágenes están muy abajo para obligar al scroll.
+  Convención: data-expect = ruta resuelta esperada; data-expect-kind = kind del ImageRef.
+  expect: #i1 → /img/i1.png?w=300&h=300 (http|chipRect correcto tras hacer scroll ~3000 px)
+  expect: #i2 → /img/i2.png?w=300&h=300 (http|chipRect correcto tras hacer scroll ~3000 px)
+-->
+<style>
+  html { filter: invert(1); }
+  body { transform: translateZ(0); margin: 0; font-family: system-ui, sans-serif; }
+  .spacer { height: 3000px; background: linear-gradient(#fff, #ddd); }
+  .targets { padding: 24px; }
+  img { display: block; margin: 24px 0; }
+</style>
+</head>
+<body>
+<div class="spacer">Desplázate hacia abajo: las imágenes están a 3000 px.</div>
+<div class="targets">
+  <img id="i1" src="/img/i1.png?w=300&h=300" width="300" height="300" alt="i1" data-expect="/img/i1.png?w=300&h=300" data-expect-kind="http">
+  <img id="i2" src="/img/i2.png?w=300&h=300" width="300" height="300" alt="i2" data-expect="/img/i2.png?w=300&h=300" data-expect-kind="http">
+</div>
+</body>
+</html>

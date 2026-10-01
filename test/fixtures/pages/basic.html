@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: básica</title>
+<!-- expect: #g1 → /img/g1.png?w=400&h=300 (http) -->
+<!-- expect: #g2 → /img/g2.png?w=400&h=300 (http) -->
+<!-- expect: #g3 → /img/g3.png?w=400&h=300 (http) -->
+<!-- expect: #g4 → /img/g4.png?w=400&h=300 (http) -->
+<!-- expect: #g5 → /img/g5.png?w=400&h=300 (http) -->
+<!-- expect: #g6 → /img/g6.png?w=400&h=300 (http) -->
+<!-- expect: #g7 → /img/g7.png?w=400&h=300 (http) ; tercera fila: parcialmente visible en un viewport de 720 px (top≈669): la esquina superior derecha (chip) queda dentro sin scroll; para el caso con scroll usar #far -->
+<!-- expect: #g8 → /img/g8.png?w=400&h=300 (http) ; tercera fila -->
+<!-- expect: #g9 → /img/g9.png?w=400&h=300 (http) ; tercera fila -->
+<!-- expect: #far → /img/far.png?w=400&h=300 (http) ; bajo el pliegue: hay que hacer scroll -->
+<!-- skip: #pixel → píxel de seguimiento 1x1 (regla pixel) -->
+<!-- skip: #spacer → spacer 16x16 estirado a 300x300 por CSS (regla spacer) -->
+<!-- Convención (todas las páginas): data-expect = ruta resuelta esperada; data-expect-kind = kind del ImageRef (http|data|blob|canvas|svg; frame en <iframe>); data-expect-skip = motivo por el que NO debe aceptarse -->
+<style>
+  body { margin: 8px; font: 14px system-ui, sans-serif; }
+  h1 { margin: 0 0 8px; font-size: 18px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 400px); gap: 16px; }
+  .grid img { display: block; width: 400px; height: 300px; }
+  .row { display: flex; gap: 24px; align-items: flex-start; margin-top: 24px; }
+  #spacer { width: 300px; height: 300px; }
+  .filler { height: 1600px; }
+</style>
+</head>
+<body>
+<h1>Cuadrícula básica</h1>
+<div class="grid">
+  <img id="g1" src="/img/g1.png?w=400&h=300" width="400" height="300" alt="g1" data-expect="/img/g1.png?w=400&h=300" data-expect-kind="http">
+  <img id="g2" src="/img/g2.png?w=400&h=300" width="400" height="300" alt="g2" data-expect="/img/g2.png?w=400&h=300" data-expect-kind="http">
+  <img id="g3" src="/img/g3.png?w=400&h=300" width="400" height="300" alt="g3" data-expect="/img/g3.png?w=400&h=300" data-expect-kind="http">
+  <img id="g4" src="/img/g4.png?w=400&h=300" width="400" height="300" alt="g4" data-expect="/img/g4.png?w=400&h=300" data-expect-kind="http">
+  <img id="g5" src="/img/g5.png?w=400&h=300" width="400" height="300" alt="g5" data-expect="/img/g5.png?w=400&h=300" data-expect-kind="http">
+  <img id="g6" src="/img/g6.png?w=400&h=300" width="400" height="300" alt="g6" data-expect="/img/g6.png?w=400&h=300" data-expect-kind="http">
+  <img id="g7" src="/img/g7.png?w=400&h=300" width="400" height="300" alt="g7" data-expect="/img/g7.png?w=400&h=300" data-expect-kind="http">
+  <img id="g8" src="/img/g8.png?w=400&h=300" width="400" height="300" alt="g8" data-expect="/img/g8.png?w=400&h=300" data-expect-kind="http">
+  <img id="g9" src="/img/g9.png?w=400&h=300" width="400" height="300" alt="g9" data-expect="/img/g9.png?w=400&h=300" data-expect-kind="http">
+</div>
+<div class="row">
+  <p>Píxel de seguimiento: <img id="pixel" src="/img/px.png?w=1&h=1" width="1" height="1" alt="" data-expect-skip="pixel"></p>
+  <img id="spacer" src="/img/sp.png?w=16&h=16" alt="" data-expect-skip="spacer">
+</div>
+<div class="filler"></div>
+<img id="far" src="/img/far.png?w=400&h=300" width="400" height="300" alt="far" data-expect="/img/far.png?w=400&h=300" data-expect-kind="http">
+<div class="filler"></div>
+</body>
+</html>

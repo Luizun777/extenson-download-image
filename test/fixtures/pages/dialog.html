@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: diálogo modal</title>
+<!--
+  <dialog> modal (showModal) con una imagen dentro: el top layer del diálogo pinta sobre el popover anterior,
+  así que el host debe moverse dentro del diálogo mientras esté abierto y volver a <html> al cerrarse.
+  Convención: data-expect = ruta resuelta esperada; data-expect-kind = kind del ImageRef.
+  expect: #in-dialog → /img/d1.png?w=300&h=300 (http|solo tiene caja tras pulsar #open; chip clicable dentro del modal)
+  expect: #outside → /img/d2.png?w=300&h=300 (http|fuera del diálogo; inerte mientras el modal está abierto)
+-->
+<style>
+  body { margin: 0; padding: 24px; font-family: system-ui, sans-serif; }
+  dialog { padding: 16px; border: 2px solid #333; }
+  img { display: block; margin: 16px 0; }
+</style>
+</head>
+<body>
+<h1>Diálogo modal</h1>
+<button id="open" type="button">Abrir diálogo</button>
+<img id="outside" src="/img/d2.png?w=300&h=300" width="300" height="300" alt="fuera" data-expect="/img/d2.png?w=300&h=300" data-expect-kind="http">
+<dialog id="dlg">
+  <p>Imagen dentro del diálogo modal</p>
+  <img id="in-dialog" src="/img/d1.png?w=300&h=300" width="300" height="300" alt="dentro" data-expect="/img/d1.png?w=300&h=300" data-expect-kind="http">
+  <button id="close" type="button">Cerrar</button>
+</dialog>
+<script>
+  'use strict';
+  const dlg = document.getElementById('dlg');
+  document.getElementById('open').addEventListener('click', () => dlg.showModal());
+  document.getElementById('close').addEventListener('click', () => dlg.close());
+</script>
+</body>
+</html>

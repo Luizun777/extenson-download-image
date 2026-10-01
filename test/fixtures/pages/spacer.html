@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: spacer estilo Flickr</title>
+<!-- expect: #photo → /img/flickr.png?w=500&h=375 (http) ; foto con un spacer 16x16 estirado encima -->
+<!-- expect: #photo2 → /img/flickr2.png?w=500&h=375 (http) ; foto con un gif data: 1x1 estirado encima -->
+<!-- skip: #spacer → spacer 16x16 estirado a 500x375 (regla spacer) -->
+<!-- skip: #pixel-cover → gif data: 1x1 estirado a 500x375 (regla pixel) -->
+<style>
+  body { margin: 8px; font: 14px system-ui, sans-serif; }
+  h1 { margin: 0 0 8px; font-size: 18px; }
+  .row { display: flex; gap: 24px; }
+  .photo-well { position: relative; width: 500px; height: 375px; }
+  .photo-well img { display: block; }
+  .spacer { position: absolute; inset: 0; width: 500px; height: 375px; }
+</style>
+</head>
+<body>
+<h1>Spacers</h1>
+<div class="row">
+<div class="photo-well" id="well-1">
+  <img id="photo" src="/img/flickr.png?w=500&h=375" width="500" height="375" alt="photo" data-expect="/img/flickr.png?w=500&h=375" data-expect-kind="http">
+  <img id="spacer" class="spacer" src="/img/spacer.png?w=16&h=16" alt="" data-expect-skip="spacer">
+</div>
+
+<div class="photo-well" id="well-2">
+  <img id="photo2" src="/img/flickr2.png?w=500&h=375" width="500" height="375" alt="photo2" data-expect="/img/flickr2.png?w=500&h=375" data-expect-kind="http">
+  <img id="pixel-cover" class="spacer" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" data-expect-skip="pixel">
+</div>
+</div>
+</body>
+</html>

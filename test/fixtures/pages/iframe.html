@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: iframe de otro origen</title>
+<!-- expect: #top → /img/top.png?w=400&h=300 (http) ; img en el documento superior -->
+<!-- expect: #cross → iframe-inner.html en el origen alterno (127.0.0.1 ↔ localhost); sus objetivos son #in1, #in2, #in3 -->
+<!-- action: #add-iframe → al pulsar añade otro iframe-inner (#cross-2, #cross-3, …) en el origen alterno -->
+<style>
+  body { margin: 8px; font: 14px system-ui, sans-serif; }
+  h1 { margin: 0 0 8px; font-size: 18px; }
+  .row { display: flex; gap: 24px; align-items: flex-start; margin-bottom: 16px; }
+  #top { display: block; width: 400px; height: 300px; }
+  iframe { display: block; width: 960px; height: 340px; border: 1px solid #999; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<h1>Iframe de otro origen</h1>
+<div class="row">
+  <img id="top" src="/img/top.png?w=400&h=300" width="400" height="300" alt="top" data-expect="/img/top.png?w=400&h=300" data-expect-kind="http">
+  <p><button id="add-iframe" type="button">Añadir otro iframe</button></p>
+</div>
+<div id="frames"></div>
+<script>
+  'use strict';
+  // Origen alterno construido en tiempo de ejecución: mismo puerto, host intercambiado.
+  const altHost = location.hostname === 'localhost' ? '127.0.0.1' : 'localhost';
+  const innerUrl = location.protocol + '//' + altHost + ':' + location.port + '/pages/iframe-inner.html';
+  const frames = document.getElementById('frames');
+  let n = 0;
+  function addFrame() {
+    n++;
+    const f = document.createElement('iframe');
+    f.id = n === 1 ? 'cross' : 'cross-' + n;
+    f.src = innerUrl;
+    f.dataset.expect = 'iframe-inner';
+    f.dataset.expectKind = 'frame';
+    frames.append(f);
+    return f;
+  }
+  addFrame();
+  document.getElementById('add-iframe').addEventListener('click', addFrame);
+</script>
+</body>
+</html>

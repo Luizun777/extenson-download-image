@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: SPA con lista virtualizada</title>
+<!--
+  Lista virtualizada de 200 ítems (ROW=220 px): solo ~20 están en el DOM; en cada scroll que cambia la ventana visible
+  se destruyen y se vuelven a crear TODOS los nodos (replaceChildren), así que una selección por elemento se perdería:
+  debe sobrevivir por clave (kind|url) y rebind al reaparecer. #nav1/#nav2 hacen history.pushState (sin recarga) y cambian
+  la lista visible (vista 1: v0…v199; vista 2: v200…v399); el badge debe seguir 'ON' tras navegar. window.__spaLoadedAt no
+  cambia si no hubo recarga. Las imágenes se crean con data-expect dinámicamente.
+  Convención: data-expect = ruta resuelta esperada; data-expect-kind = kind del ImageRef.
+  expect: #v0 → /img/v0.png?w=300&h=200 (http|primer ítem de la vista 1; desaparece del DOM al hacer scroll ~100 filas y reaparece al volver)
+  expect: #v200 → /img/v200.png?w=300&h=200 (http|primer ítem de la vista 2, tras pulsar #nav2)
+-->
+<style>
+  body { margin: 0; padding: 24px; font-family: system-ui, sans-serif; }
+  nav { position: sticky; top: 0; background: #fff; padding: 8px 0; z-index: 1; }
+  nav a { margin-right: 16px; }
+  #list { position: relative; }
+  .item { position: absolute; left: 0; height: 200px; }
+  .item img { display: block; background: #eee; }
+</style>
+</head>
+<body>
+<nav>
+  <a id="nav1" href="?view=1">Vista 1</a>
+  <a id="nav2" href="?view=2">Vista 2</a>
+  <span id="status"></span>
+</nav>
+<div id="list"></div>
+<script>
+  'use strict';
+  const ROW = 220;
+  const TOTAL = 200;
+  const WINDOW = 20;
+  const list = document.getElementById('list');
+  const status = document.getElementById('status');
+  window.__spaLoadedAt = Date.now();
+
+  function viewFromLocation() {
+    return new URLSearchParams(location.search).get('view') === '2' ? 200 : 0;
+  }
+  let base = viewFromLocation();
+  let firstShown = -1;
+
+  function render(force) {
+    const first = Math.max(0, Math.floor(window.scrollY / ROW) - 2);
+    if (!force && first === firstShown) return;
+    firstShown = first;
+    const last = Math.min(TOTAL - 1, first + WINDOW - 1);
+    const frag = document.createDocumentFragment();
+    for (let i = first; i <= last; i++) {
+      const n = base + i;
+      const item = document.createElement('div');
+      item.className = 'item';
+      item.style.top = (i * ROW) + 'px';
+      item.dataset.index = String(n);
+      const img = document.createElement('img');
+      img.id = 'v' + n;
+      img.src = '/img/v' + n + '.png?w=300&h=200';
+      img.width = 300;
+      img.height = 200;
+      img.alt = 'v' + n;
+      img.dataset.expect = '/img/v' + n + '.png?w=300&h=200';
+      img.dataset.expectKind = 'http';
+      item.append(img);
+      frag.append(item);
+    }
+    // Nodos recreados: ningún elemento anterior sobrevive
+    list.replaceChildren(frag);
+    status.textContent = 'vista ' + (base ? 2 : 1) + ': ítems ' + (base + first) + '–' + (base + last);
+  }
+
+  function go(view, push) {
+    base = view === 2 ? 200 : 0;
+    if (push) history.pushState({ view }, '', '?view=' + view);
+    window.scrollTo(0, 0);
+    render(true);
+  }
+
+  list.style.height = (TOTAL * ROW) + 'px';
+  window.addEventListener('scroll', () => render(false), { passive: true });
+  window.addEventListener('popstate', () => go(viewFromLocation() ? 2 : 1, false));
+  document.getElementById('nav1').addEventListener('click', (e) => { e.preventDefault(); go(1, true); });
+  document.getElementById('nav2').addEventListener('click', (e) => { e.preventDefault(); go(2, true); });
+  render(true);
+</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: shadow DOM</title>
+<!-- expect: #open-host → /img/open.png?w=400&h=300 (http) ; img #open-img dentro de un shadow root abierto (declarativo) -->
+<!-- expect: #closed-host → /img/closed.png?w=400&h=300 (http) ; img #closed-img dentro de un shadow root cerrado (script); los selectores no lo atraviesan: usar el rect del host -->
+<!-- expect: #nested-host → /img/nested.png?w=400&h=300 (http) ; img #nested-img a dos niveles de shadow abierto -->
+<style>
+  body { margin: 8px; font: 14px system-ui, sans-serif; }
+  h1 { margin: 0 0 8px; font-size: 18px; }
+  .row { display: flex; gap: 24px; }
+  .host { display: block; width: 400px; height: 300px; }
+</style>
+</head>
+<body>
+<h1>Shadow DOM</h1>
+<div class="row">
+<div id="open-host" class="host" data-expect="/img/open.png?w=400&h=300" data-expect-kind="http">
+  <template shadowrootmode="open">
+    <img id="open-img" src="/img/open.png?w=400&h=300" width="400" height="300" alt="open" data-expect="/img/open.png?w=400&h=300" data-expect-kind="http">
+  </template>
+</div>
+
+<div id="closed-host" class="host" data-expect="/img/closed.png?w=400&h=300" data-expect-kind="http"></div>
+
+<div id="nested-host" class="host" data-expect="/img/nested.png?w=400&h=300" data-expect-kind="http">
+  <template shadowrootmode="open">
+    <div id="inner-host" style="display:block;width:400px;height:300px">
+      <template shadowrootmode="open">
+        <img id="nested-img" src="/img/nested.png?w=400&h=300" width="400" height="300" alt="nested" data-expect="/img/nested.png?w=400&h=300" data-expect-kind="http">
+      </template>
+    </div>
+  </template>
+</div>
+</div>
+
+<script>
+  'use strict';
+  // Shadow root cerrado: solo se puede crear por script (esta página no tiene CSP).
+  const root = document.getElementById('closed-host').attachShadow({ mode: 'closed' });
+  const img = document.createElement('img');
+  img.id = 'closed-img';
+  img.src = '/img/closed.png?w=400&h=300';
+  img.width = 400;
+  img.height = 300;
+  img.alt = 'closed';
+  img.dataset.expect = '/img/closed.png?w=400&h=300';
+  img.dataset.expectKind = 'http';
+  root.append(img);
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: lote ZIP</title>
+<!--
+  Lote para archivos sueltos y ZIP: 6 imágenes (una falla la primera vez, otra es HTML disfrazado, dos comparten nombre base,
+  una lleva ñ percent-encoded), una 7.ª lenta para cancelar y, bajo <details id="many"> (cerrado), 400 imágenes de 120×120
+  para la confirmación NEEDS_CONFIRM (abrir con document.getElementById('many').open = true; llevan class="many", sin data-expect).
+  Convención: data-expect = ruta resuelta esperada (percent-encoding incluido); data-expect-kind = kind; data-expect-error = exclusión esperada.
+  expect: #z1 → /img/z1.png?w=300&h=300 (http|en el ZIP como z1.png)
+  expect: #z2 → /img/z2.png?w=300&h=300 (http|en el ZIP como z2.png)
+  expect: #fail-once → /fail-once.png (http|el servidor responde 500 la primera vez y 200 después; la página reintenta una vez al fallar (data-retried="1") para mostrarla; el lote debe reintentar o acertar a la segunda)
+  expect: #html-as-jpg → /html-as-jpg.jpg (http|200 text/html: rota en la página; excluida del ZIP → _fallidas.txt con NOT_IMAGE; descarga suelta → ERR_HTML)
+  expect: #a1 → /img/a.png?w=300&h=300 (http|base 'a' de un carácter = genérica para names.buildBaseName → usa el alt "a" → a.png)
+  expect: #a2 → /cors/a.png?w=301&h=301 (http|mismo alt "a" → mismo nombre base: a.png y a (2).png en el lote y en el ZIP)
+  expect: #nandu → /img/%C3%B1and%C3%BA.png?w=300&h=300 (http|nombre decodificado ñandú.png, entrada UTF-8 (bit 11) en el ZIP)
+  expect: #slow → /slow.png?ms=5000 (http|tarda 5 s en responder: para cancelar el lote a mitad; tiene caja por width/height antes de cargar)
+-->
+<style>
+  body { margin: 0; padding: 24px; font-family: system-ui, sans-serif; }
+  .row { display: flex; flex-wrap: wrap; gap: 24px; }
+  img { display: block; background: #eee; }
+  #many-grid { display: flex; flex-wrap: wrap; gap: 4px; }
+</style>
+</head>
+<body>
+<h1>Lote ZIP</h1>
+<div class="row">
+  <img id="z1" src="/img/z1.png?w=300&h=300" width="300" height="300" alt="z1" data-expect="/img/z1.png?w=300&h=300" data-expect-kind="http">
+  <img id="z2" src="/img/z2.png?w=300&h=300" width="300" height="300" alt="z2" data-expect="/img/z2.png?w=300&h=300" data-expect-kind="http">
+  <img id="fail-once" src="/fail-once.png" width="300" height="300" alt="fail-once" data-expect="/fail-once.png" data-expect-kind="http">
+  <img id="html-as-jpg" src="/html-as-jpg.jpg" width="300" height="300" alt="html-as-jpg" data-expect="/html-as-jpg.jpg" data-expect-kind="http" data-expect-error="NOT_IMAGE">
+  <img id="a1" src="/img/a.png?w=300&h=300" width="300" height="300" alt="a" data-expect="/img/a.png?w=300&h=300" data-expect-kind="http">
+  <img id="a2" src="/cors/a.png?w=301&h=301" width="301" height="301" alt="a" data-expect="/cors/a.png?w=301&h=301" data-expect-kind="http">
+  <img id="nandu" src="/img/%C3%B1and%C3%BA.png?w=300&h=300" width="300" height="300" alt="ñandú" data-expect="/img/%C3%B1and%C3%BA.png?w=300&h=300" data-expect-kind="http">
+  <img id="slow" src="/slow.png?ms=5000" width="300" height="300" alt="lenta" data-expect="/slow.png?ms=5000" data-expect-kind="http">
+</div>
+<details id="many">
+  <summary>400 imágenes pequeñas (120×120)</summary>
+  <div id="many-grid"></div>
+</details>
+<script>
+  'use strict';
+  // #fail-once: el servidor da 500 la primera vez; reintentamos una sola vez para que la página la muestre
+  const failOnce = document.getElementById('fail-once');
+  failOnce.addEventListener('error', () => {
+    if (failOnce.dataset.retried) return;
+    failOnce.dataset.retried = '1';
+    const src = failOnce.getAttribute('src');
+    failOnce.removeAttribute('src');
+    failOnce.setAttribute('src', src);
+  });
+
+  // 400 imágenes pequeñas para NEEDS_CONFIRM
+  const grid = document.getElementById('many-grid');
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < 400; i++) {
+    const img = document.createElement('img');
+    img.className = 'many';
+    img.src = '/img/m.png?w=120&h=120';
+    img.width = 120;
+    img.height = 120;
+    img.alt = 'm' + i;
+    frag.append(img);
+  }
+  grid.append(frag);
+</script>
+</body>
+</html>

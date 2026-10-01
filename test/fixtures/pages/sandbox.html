@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: iframes sandbox y about:blank</title>
+<!-- expect: #top → /img/top-sb.png?w=400&h=300 (http) ; img en el documento superior -->
+<!-- expect: #sandboxed → iframe-inner.html con sandbox (origen opaco, sin scripts); objetivos #in1..#in3; comportamiento a registrar -->
+<!-- expect: #blank → iframe about:blank en el que el padre escribe #blank-img → /img/blank.png?w=300&h=300 (http); comportamiento a registrar -->
+<style>
+  body { margin: 8px; font: 14px system-ui, sans-serif; }
+  h1 { margin: 0 0 8px; font-size: 18px; }
+  .row { display: flex; gap: 24px; align-items: flex-start; margin-bottom: 16px; }
+  #top { display: block; width: 400px; height: 300px; }
+  iframe { display: block; border: 1px solid #999; }
+  #sandboxed { width: 960px; height: 330px; }
+  #blank { width: 400px; height: 330px; }
+</style>
+</head>
+<body>
+<h1>Sandbox / about:blank</h1>
+<div class="row">
+  <img id="top" src="/img/top-sb.png?w=400&h=300" width="400" height="300" alt="top" data-expect="/img/top-sb.png?w=400&h=300" data-expect-kind="http">
+  <iframe id="blank" src="about:blank" data-expect="/img/blank.png?w=300&h=300" data-expect-kind="frame"></iframe>
+</div>
+<iframe id="sandboxed" sandbox src="/pages/iframe-inner.html" data-expect="iframe-inner" data-expect-kind="frame"></iframe>
+<script>
+  'use strict';
+  // El padre escribe una imagen dentro del marco about:blank (URL absoluta: su base es la del padre).
+  const blank = document.getElementById('blank');
+  function fill() {
+    const doc = blank.contentDocument;
+    if (!doc || !doc.body) return;
+    doc.body.innerHTML = '';
+    doc.body.style.margin = '8px';
+    const img = doc.createElement('img');
+    img.id = 'blank-img';
+    img.src = location.origin + '/img/blank.png?w=300&h=300';
+    img.width = 300;
+    img.height = 300;
+    img.alt = 'blank';
+    img.dataset.expect = '/img/blank.png?w=300&h=300';
+    img.dataset.expectKind = 'http';
+    doc.body.append(img);
+  }
+  fill();
+  blank.addEventListener('load', fill); // por si la navegación a about:blank sustituye el documento inicial
+</script>
+</body>
+</html>

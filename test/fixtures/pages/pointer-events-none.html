@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: pointer-events:none</title>
+<!-- expect: #pen → /img/pen-big.png?w=800&h=600 (http) ; img grande con pointer-events:none, nada encima: fallback geométrico -->
+<style>
+  body { margin: 8px; font: 14px system-ui, sans-serif; }
+  h1 { margin: 0 0 8px; font-size: 18px; }
+  #wrap { width: 800px; height: 600px; }
+  #pen { display: block; width: 800px; height: 600px; pointer-events: none; }
+</style>
+</head>
+<body>
+<h1>pointer-events: none</h1>
+<div id="wrap">
+  <img id="pen" src="/img/pen-big.png?w=800&h=600" width="800" height="600" alt="pen" data-expect="/img/pen-big.png?w=800&h=600" data-expect-kind="http">
+</div>
+</body>
+</html>

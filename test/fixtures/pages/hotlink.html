@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: anti-hotlink por Referer</title>
+<!--
+  Imagen del origen ALTERNO (mismo puerto, otro host) que el servidor solo sirve con Referer de nuestros orígenes.
+  El navegador envía Referer al cargarla, así que se ve; chrome.downloads no envía Referer → 403 (SERVER_FORBIDDEN)
+  → peldaño 2 (fetch en offscreen con regla DNR de sesión que pone el Referer de la página) → descarga completa.
+  Convención: data-expect = ruta esperada; data-expect-origin="alt" = la ruta cuelga del origen alterno; data-expect-kind = kind.
+  expect: #h → ALT/hotlink/h.png?w=300&h=300 (http|403 en descarga directa; el peldaño 2 con Referer la completa)
+-->
+<style>
+  body { margin: 0; padding: 24px; font-family: system-ui, sans-serif; }
+  img { display: block; margin: 24px 0; }
+</style>
+</head>
+<body>
+<h1>Anti-hotlink</h1>
+<img id="h" width="300" height="300" alt="hotlink" data-expect="/hotlink/h.png?w=300&h=300" data-expect-origin="alt" data-expect-kind="http">
+<p id="alt-origin"></p>
+<script>
+  'use strict';
+  // Origen alterno: mismo puerto, el otro host (127.0.0.1 <-> localhost)
+  const ALT = location.protocol + '//' + (location.hostname === 'localhost' ? '127.0.0.1' : 'localhost') + ':' + location.port;
+  document.getElementById('alt-origin').textContent = 'Origen alterno: ' + ALT;
+  document.getElementById('h').src = ALT + '/hotlink/h.png?w=300&h=300';
+</script>
+</body>
+</html>

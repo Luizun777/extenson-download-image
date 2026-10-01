@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: overlays transparentes</title>
+<!-- expect: #covered → /img/covered.png?w=400&h=300 (http) ; img bajo un div absoluto transparente (estilo Instagram) -->
+<!-- expect: #pen → /img/pen.png?w=400&h=300 (http) ; img con pointer-events:none bajo un overlay transparente -->
+<!-- expect: #photo → /img/photo.png?w=400&h=300 (http) ; foto con un spacer 16x16 opacity:0 estirado encima -->
+<!-- skip: #spacer → spacer 16x16 estirado con opacity:0 (regla spacer; sí aparece en elementsFromPoint) -->
+<style>
+  body { margin: 8px; font: 14px system-ui, sans-serif; }
+  h1 { margin: 0 0 8px; font-size: 18px; }
+  .row { display: flex; gap: 24px; }
+  .well { position: relative; width: 400px; height: 300px; }
+  .well img { display: block; width: 400px; height: 300px; }
+  .cover { position: absolute; inset: 0; background: transparent; }
+  #spacer { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; }
+</style>
+</head>
+<body>
+<h1>Overlays</h1>
+<div class="row">
+<div class="well" id="well-a">
+  <img id="covered" src="/img/covered.png?w=400&h=300" width="400" height="300" alt="covered" data-expect="/img/covered.png?w=400&h=300" data-expect-kind="http">
+  <div class="cover" id="cover-a"></div>
+</div>
+
+<div class="well" id="well-b">
+  <img id="pen" src="/img/pen.png?w=400&h=300" width="400" height="300" alt="pen" style="pointer-events: none" data-expect="/img/pen.png?w=400&h=300" data-expect-kind="http">
+  <div class="cover" id="cover-b"></div>
+</div>
+
+<div class="well" id="well-c">
+  <img id="photo" src="/img/photo.png?w=400&h=300" width="400" height="300" alt="photo" data-expect="/img/photo.png?w=400&h=300" data-expect-kind="http">
+  <img id="spacer" src="/img/sp.png?w=16&h=16" alt="" data-expect-skip="spacer">
+</div>
+</div>
+</body>
+</html>

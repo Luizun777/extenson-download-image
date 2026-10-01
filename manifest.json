@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Descarga de imágenes",
+  "version": "0.1.0",
+  "description": "Pasa el ratón sobre una imagen para descargarla, o selecciona varias y descárgalas sueltas o en un ZIP.",
+  "minimum_chrome_version": "116",
+  "permissions": ["scripting", "downloads", "offscreen", "storage", "declarativeNetRequestWithHostAccess"],
+  "host_permissions": ["<all_urls>"],
+  "background": { "service_worker": "background/service-worker.js" },
+  "icons": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
+  "action": {
+    "default_title": "Descarga de imágenes (Alt+Shift+D): activar/desactivar en esta pestaña",
+    "default_icon": { "16": "icons/icon16.png", "32": "icons/icon32.png" }
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": { "default": "Alt+Shift+D", "mac": "MacCtrl+Shift+D" },
+      "description": "Activar/desactivar la descarga de imágenes en esta pestaña"
+    }
+  }
+}

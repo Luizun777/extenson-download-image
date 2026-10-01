@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: imagen protegida por cookie</title>
+<!--
+  La página fija document.cookie=auth=1 y después asigna la src por script (el preload scanner de Chrome pediría un
+  <img src> del marcado antes de ejecutar el script y llegaría sin cookie); el servidor devuelve 403 sin esa cookie.
+  Desviación documentada respecto al plan (paso 7, "imagen del origen alterno"): la imagen es del MISMO origen a propósito.
+  Una cookie fijada con document.cookie en 127.0.0.1 nunca viaja a localhost, server.js no tiene ruta Set-Cookie y una
+  cookie SameSite=None exigiría Secure (imposible sobre http), así que un <img> de otro sitio jamás la llevaría.
+  Mismo origen: la cookie se envía al cargarla, en chrome.downloads (tarro del navegador) y en el fetch del
+  offscreen con credentials:'include' (ese fetch sale del origen chrome-extension://, por eso P2 sigue necesitándolo).
+  El e2e debe comprobar en /count que el acierto llevó Cookie (withCookie ≥ 1) en P1 o P2.
+  Convención: data-expect = ruta resuelta esperada; data-expect-kind = kind del ImageRef.
+  expect: #c → /cookie/c.png?w=300&h=300 (http|descarga completa con cookie en P1 o P2)
+-->
+<script>
+  'use strict';
+  document.cookie = 'auth=1; path=/';
+</script>
+<style>
+  body { margin: 0; padding: 24px; font-family: system-ui, sans-serif; }
+  img { display: block; margin: 24px 0; }
+</style>
+</head>
+<body>
+<h1>Imagen con cookie</h1>
+<img id="c" width="300" height="300" alt="cookie" data-expect="/cookie/c.png?w=300&h=300" data-expect-kind="http">
+<script>
+  'use strict';
+  document.getElementById('c').src = '/cookie/c.png?w=300&h=300';
+</script>
+</body>
+</html>

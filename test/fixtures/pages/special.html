@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: fuentes especiales</title>
+<!--
+  Fuentes que no son una URL http normal: data:, blob: (viva y revocada), canvas (limpio y contaminado), SVG inline y póster de vídeo.
+  Convención: data-expect = ruta/URL esperada para http y data ("(src)" = la propia src del elemento), o la extensión esperada del
+  archivo descargado para los tipos byte (blob/canvas/svg); data-expect-kind = kind del ImageRef; data-expect-skip = motivo por el que NO debe aceptarse;
+  data-expect-error = código de error esperado en lugar de descarga.
+  expect: #data → (src) (data|PNG 32×32 con ruido, 3,2 KB: supera placeholderDataMax y no es píxel → descarga directa como .png)
+  skip: #data-pixel → PNG real de 2×2 y 79 B (data-expect-skip="pixel"): natural ≤2 → regla pixel; además data ≤1 KB → placeholder; sin chip
+  expect: #blob-live → png (blob|blob: viva creada desde fetch('/img/b.png?w=300&h=300'); fetch en el marco → PNG 300×300)
+  expect: #blob-revoked → png (blob|misma blob: revocada tras 'load' (data-revoked="1"); fetch falla → recodificar desde el <img> a PNG)
+  expect: #canvas2d → png (canvas|toBlob → PNG 300×300 dibujado con fillRect)
+  expect: #canvas-tainted → ERR_TAINTED_CANVAS (canvas|dibujado con imagen del origen ALTERNO sin CORS (data-tainted="1") → SecurityError, sin descarga)
+  expect: #svg → svg (svg|inline 200×200, fill por clase CSS y <use href="#sym"> cuyo <symbol id="sym"> vive en otro <svg> oculto → la exportación debe incluir <symbol>)
+  expect: #video → /img/poster.png?w=400&h=300 (http|póster de <video> sin fuente)
+  huge: #blob-huge → ERR_TOO_BIG_ITEM (blob|<img> con blob: de 40 MB tipada image/png que NO decodifica (naturalWidth 0, complete): el resolver da kind blob
+         desde src; al seleccionarla el Blob supera maxItemBytes (32 MiB) → toast ERR_TOO_BIG_ITEM y no queda seleccionada. Sin data-expect ni
+         data-expect-kind a propósito: los tests que esperan a que toda blob: con data-expect-kind cargue no deben contarla; lleva data-expect-error.)
+-->
+<style>
+  body { margin: 0; padding: 24px; font-family: system-ui, sans-serif; }
+  .row { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+  figure { margin: 0; }
+  figcaption { font-size: 12px; color: #555; }
+  canvas, img, svg, video { display: block; background: #eee; }
+  .logo .bg { fill: #ffd166; }
+  .logo .star { fill: #ef476f; }
+  .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+</style>
+</head>
+<body>
+<h1>Fuentes especiales</h1>
+<div class="row">
+  <figure>
+    <img id="data" src="data:image/png;base64,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" width="200" height="200" alt="data" data-expect="(src)" data-expect-kind="data">
+    <figcaption>#data (data: PNG 32×32, 3,2 KB)</figcaption>
+  </figure>
+  <figure>
+    <img id="data-pixel" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVR42mNgYGg4wdDAwHCi4cSJBgAbrgUhxdtcZgAAAABJRU5ErkJggg==" width="100" height="100" alt="pixel" data-expect-skip="pixel">
+    <figcaption>#data-pixel (data: PNG 2×2, 79 B → píxel)</figcaption>
+  </figure>
+  <figure>
+    <img id="blob-live" width="300" height="300" alt="blob viva" data-expect="png" data-expect-kind="blob">
+    <figcaption>#blob-live (blob: viva)</figcaption>
+  </figure>
+  <figure>
+    <img id="blob-revoked" width="300" height="300" alt="blob revocada" data-expect="png" data-expect-kind="blob">
+    <figcaption>#blob-revoked (blob: revocada tras cargar)</figcaption>
+  </figure>
+  <figure>
+    <canvas id="canvas2d" width="300" height="300" data-expect="png" data-expect-kind="canvas"></canvas>
+    <figcaption>#canvas2d (fillRect)</figcaption>
+  </figure>
+  <figure>
+    <canvas id="canvas-tainted" width="300" height="300" data-expect="ERR_TAINTED_CANVAS" data-expect-kind="canvas" data-expect-error="ERR_TAINTED_CANVAS"></canvas>
+    <figcaption>#canvas-tainted (imagen del origen alterno sin CORS)</figcaption>
+  </figure>
+  <figure>
+    <svg id="svg" class="logo" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="logo" data-expect="svg" data-expect-kind="svg">
+      <rect class="bg" x="0" y="0" width="200" height="200" rx="24"/>
+      <use href="#sym" x="40" y="40" width="120" height="120"/>
+    </svg>
+    <figcaption>#svg (fill por clase + &lt;use href="#sym"&gt;)</figcaption>
+  </figure>
+  <figure>
+    <video id="video" poster="/img/poster.png?w=400&h=300" width="400" height="300" muted playsinline data-expect="/img/poster.png?w=400&h=300" data-expect-kind="http"></video>
+    <figcaption>#video (póster)</figcaption>
+  </figure>
+  <figure>
+    <img id="blob-huge" width="300" height="300" alt="blob enorme" data-expect-error="ERR_TOO_BIG_ITEM">
+    <figcaption>#blob-huge (blob: de 40 MB que no decodifica)</figcaption>
+  </figure>
+</div>
+
+<!-- Sprite con el <symbol> referenciado por el <use> de #svg: está fuera del <svg> objetivo -->
+<svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="sym" viewBox="0 0 24 24">
+    <path class="star" d="M12 2l2.9 6.6 7.1.7-5.4 4.8 1.6 7L12 17.4 5.8 21l1.6-7L2 9.3l7.1-.7z"/>
+  </symbol>
+</svg>
+
+<script>
+  'use strict';
+  // Origen alterno: mismo puerto, el otro host (127.0.0.1 <-> localhost)
+  const ALT = location.protocol + '//' + (location.hostname === 'localhost' ? '127.0.0.1' : 'localhost') + ':' + location.port;
+
+  // blob: viva y blob: revocada tras cargar
+  async function loadBlob(img, revoke) {
+    const res = await fetch('/img/b.png?w=300&h=300');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    if (revoke) {
+      img.addEventListener('load', () => {
+        URL.revokeObjectURL(url);
+        img.dataset.revoked = '1';
+      }, { once: true });
+    }
+    img.src = url;
+  }
+  loadBlob(document.getElementById('blob-live'), false);
+  loadBlob(document.getElementById('blob-revoked'), true);
+
+  // blob: de 40 MB tipada image/png que no decodifica (ceros): supera maxItemBytes al seleccionarla
+  const huge = document.getElementById('blob-huge');
+  huge.addEventListener('error', () => { huge.dataset.huge = 'error'; }, { once: true });
+  huge.src = URL.createObjectURL(new Blob([new Uint8Array(40 << 20)], { type: 'image/png' }));
+
+  // canvas 2D limpio
+  const c2d = document.getElementById('canvas2d').getContext('2d');
+  c2d.fillStyle = '#1a73e8';
+  c2d.fillRect(0, 0, 300, 300);
+  c2d.fillStyle = '#ffffff';
+  c2d.fillRect(75, 75, 150, 150);
+
+  // canvas contaminado: imagen cross-origin sin atributo crossorigin
+  const tainted = document.getElementById('canvas-tainted');
+  const tctx = tainted.getContext('2d');
+  const timg = new Image();
+  timg.addEventListener('load', () => {
+    tctx.drawImage(timg, 0, 0, 300, 300);
+    tainted.dataset.tainted = '1';
+  });
+  timg.addEventListener('error', () => { tainted.dataset.tainted = 'error'; });
+  timg.src = ALT + '/img/t.png?w=300&h=300';
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Fixture: interior del iframe</title>
+<!-- expect: #in1 → /img/in1.png?w=300&h=300 (http) ; relativo al origen del propio marco -->
+<!-- expect: #in2 → /img/in2.png?w=300&h=300 (http) -->
+<!-- expect: #in3 → /img/in3.png?w=300&h=300 (http) -->
+<style>
+  body { margin: 8px; font: 14px system-ui, sans-serif; }
+  .row { display: flex; gap: 16px; }
+  .row img { display: block; width: 300px; height: 300px; }
+</style>
+</head>
+<body>
+<div class="row">
+  <img id="in1" src="/img/in1.png?w=300&h=300" width="300" height="300" alt="in1" data-expect="/img/in1.png?w=300&h=300" data-expect-kind="http">
+  <img id="in2" src="/img/in2.png?w=300&h=300" width="300" height="300" alt="in2" data-expect="/img/in2.png?w=300&h=300" data-expect-kind="http">
+  <img id="in3" src="/img/in3.png?w=300&h=300" width="300" height="300" alt="in3" data-expect="/img/in3.png?w=300&h=300" data-expect-kind="http">
+</div>
+</body>
+</html>
